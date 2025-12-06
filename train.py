@@ -4,6 +4,7 @@ from stable_baselines3.common.env_checker import check_env
 from envs.bittle_env import BittleEnv
 from envs.humanoid_env import HumanoidEnv
 import os
+import torch
 
 
 def train():
@@ -37,13 +38,21 @@ def train():
     model_path = f"{model_name}.zip"
     tensorboard_log = f"./{model_name}_tensorboard/"
 
+    # Detect GPU availability
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using device: {device}")
+
     if os.path.exists(model_path):
         print(f"Loading existing model from {model_path}...")
-        model = PPO.load(model_path, env=env, tensorboard_log=tensorboard_log)
+        model = PPO.load(
+            model_path, env=env, tensorboard_log=tensorboard_log, device=device
+        )
         reset_num_timesteps = False
     else:
         print(f"No existing model found, creating new PPO agent for {model_name}...")
-        model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=tensorboard_log)
+        model = PPO(
+            "MlpPolicy", env, verbose=1, tensorboard_log=tensorboard_log, device=device
+        )
         reset_num_timesteps = True
 
     # Train
