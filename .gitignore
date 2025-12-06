@@ -1,13 +1,36 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
 .venv/
+venv/
 .ruff_cache/
+*.egg-info/
+*.egg
 
-# Project specific
-ppo_bittle_tensorboard/
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Project specific - training outputs
+ppo_*_tensorboard/
 *.zip
 
 # Generated assets
 assets/bittle_sim.urdf
 assets/bittle_final.xml
+assets/humanoid_sim.urdf
+assets/humanoid_final.xml
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.pem

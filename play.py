@@ -1,17 +1,28 @@
 from stable_baselines3 import PPO
 from envs.bittle_env import BittleEnv
+from envs.humanoid_env import HumanoidEnv
 import mujoco
 import time
+import argparse
 
 def play():
-    env = BittleEnv(render_mode="human")
+    parser = argparse.ArgumentParser(description="Play MuJoCo simulation")
+    parser.add_argument("--robot", type=str, default="bittle", choices=["bittle", "humanoid"], help="Robot to simulate")
+    args = parser.parse_args()
+
+    if args.robot == "bittle":
+        env = BittleEnv(render_mode="human")
+        model_name = "ppo_bittle"
+    else:
+        env = HumanoidEnv(render_mode="human")
+        model_name = "ppo_humanoid_breakdance"
 
     # Load model if exists, else random
     try:
-        model = PPO.load("ppo_bittle")
-        print("Loaded trained model.")
+        model = PPO.load(model_name)
+        print(f"Loaded trained model: {model_name}")
     except Exception:
-        print("No trained model found, using random agent.")
+        print(f"No trained model found for {args.robot}, using random agent.")
         model = None
 
     obs, _ = env.reset()
