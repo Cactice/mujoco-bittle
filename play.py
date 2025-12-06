@@ -1,13 +1,20 @@
-from stable_baselines3 import PPO
+from sbx import PPO
 from envs.bittle_env import BittleEnv
 from envs.humanoid_env import HumanoidEnv
 import mujoco
 import time
 import argparse
 
+
 def play():
     parser = argparse.ArgumentParser(description="Play MuJoCo simulation")
-    parser.add_argument("--robot", type=str, default="bittle", choices=["bittle", "humanoid"], help="Robot to simulate")
+    parser.add_argument(
+        "--robot",
+        type=str,
+        default="bittle",
+        choices=["bittle", "humanoid"],
+        help="Robot to simulate",
+    )
     args = parser.parse_args()
 
     if args.robot == "bittle":
@@ -47,6 +54,7 @@ def play():
         time_until_next_step = env.dt - (time.time() - step_start)
         if time_until_next_step > 0:
             time.sleep(time_until_next_step)
+
 
 if __name__ == "__main__":
     play()

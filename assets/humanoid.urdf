@@ -115,6 +115,14 @@
     </collision>
   </link>
 
+  <joint name="torso_to_right_shoulder_joint" type="revolute">
+    <parent link="upper_torso_link"/>
+    <child link="right_upper_arm_link"/>
+    <origin xyz="0 0.25 0.05" rpy="0 0 0"/> <!-- x: center, y: right side of upper torso, z: upper part -->
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.57" upper="1.57" effort="10.0" velocity="1.0"/>
+  </joint>
+
   <joint name="torso_to_left_shoulder_joint" type="revolute">
     <parent link="upper_torso_link"/>
     <child link="left_upper_arm_link"/>
@@ -284,6 +292,14 @@
       </geometry>
     </collision>
   </link>
+
+  <joint name="torso_to_right_hip_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="right_upper_leg_link"/>
+    <origin xyz="0 0.1 -0.15" rpy="0 0 0"/> <!-- x: center, y: right side of lower torso, z: bottom -->
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.57" upper="1.57" effort="15.0" velocity="1.0"/>
+  </joint>
 
   <joint name="torso_to_left_hip_joint" type="revolute">
     <parent link="base_link"/>

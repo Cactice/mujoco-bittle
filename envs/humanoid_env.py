@@ -48,13 +48,14 @@ class HumanoidEnv(gym.Env):
         )
 
         # Observation space:
+        # - Base position x,y (2)
         # - Joint positions (14)
         # - Joint velocities (14)
         # - Base orientation (4 - quaternion)
         # - Base angular velocity (3)
-        # Total: 35
+        # Total: 37
         self.observation_space = gym.spaces.Box(
-            low=-np.inf, high=np.inf, shape=(35,), dtype=np.float32
+            low=-np.inf, high=np.inf, shape=(37,), dtype=np.float32
         )
 
         self.frame_skip = 5
@@ -191,19 +192,20 @@ class HumanoidEnv(gym.Env):
         qpos = self.data.qpos.flat.copy()
         qvel = self.data.qvel.flat.copy()
 
-        # qpos: [x, y, z, qw, qx, qy, qz, joint1, ... joint13]
-        # qvel: [vx, vy, vz, wx, wy, wz, jvel1, ... jvel13]
+        # qpos: [x, y, z, qw, qx, qy, qz, joint1, ... joint14]
+        # qvel: [vx, vy, vz, wx, wy, wz, jvel1, ... jvel14]
 
         # Joint positions start at index 7 (0-2 pos, 3-6 quat)
+        base_xy = qpos[:2]
         joint_pos = qpos[7:]
         joint_vel = qvel[6:]
 
         base_quat = qpos[3:7]
         base_ang_vel = qvel[3:6]
 
-        return np.concatenate([joint_pos, joint_vel, base_quat, base_ang_vel]).astype(
-            np.float32
-        )
+        return np.concatenate(
+            [base_xy, joint_pos, joint_vel, base_quat, base_ang_vel]
+        ).astype(np.float32)
 
     def render(self):
         if self.render_mode == "human":
