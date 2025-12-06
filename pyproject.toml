@@ -1,0 +1,15 @@
+[project]
+name = "mujoco-bittle"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "gymnasium>=1.2.2",
+    "imageio>=2.37.2",
+    "moviepy>=2.2.1",
+    "mujoco>=3.4.0",
+    "ruff>=0.14.8",
+    "stable-baselines3>=2.7.1",
+    "tensorboard>=2.20.0",
+]

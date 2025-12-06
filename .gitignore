@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ruff_cache/
+
+# Project specific
+ppo_bittle_tensorboard/
+*.zip
+
+# Generated assets
+assets/bittle_sim.urdf
+assets/bittle_final.xml
