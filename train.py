@@ -1,6 +1,7 @@
 import argparse
 from sbx import PPO
-from stable_baselines3.common.env_checker import check_env
+from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3.common.callbacks import CheckpointCallback
 from envs.bittle_env import BittleEnv
 from envs.humanoid_env import HumanoidEnv
 import os
@@ -19,24 +20,45 @@ def train():
     parser.add_argument(
         "--timesteps", type=int, default=100000, help="Total timesteps for training"
     )
+    parser.add_argument(
+        "--n-envs", type=int, default=10, help="Number of parallel environments"
+    )
+    parser.add_argument(
+        "--save-freq", type=int, default=50000, help="Save model every N timesteps"
+    )
     args = parser.parse_args()
 
-    # Create environment
+    # Create vectorized environments
+    def make_env():
+        if args.robot == "bittle":
+            return lambda: BittleEnv()
+        else:
+            return lambda: HumanoidEnv()
+
     if args.robot == "bittle":
-        env = BittleEnv()
         model_name = "ppo_bittle"
     else:
-        env = HumanoidEnv()
         model_name = "ppo_humanoid_breakdance"
 
-    # Check environment
-    print(f"Checking environment for {args.robot}...")
-    check_env(env)
-    print("Environment check passed!")
+    # Create vectorized environment with n parallel environments
+    print(f"Creating {args.n_envs} parallel environments...")
+    env = SubprocVecEnv([make_env() for _ in range(args.n_envs)])
+    print(f"Vectorized environment created with {args.n_envs} parallel environments!")
 
     # Initialize PPO agent
     model_path = f"{model_name}.zip"
     tensorboard_log = f"./{model_name}_tensorboard/"
+    checkpoint_dir = f"./checkpoints/{model_name}/"
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    # Create checkpoint callback to save model periodically
+    checkpoint_callback = CheckpointCallback(
+        save_freq=args.save_freq,
+        save_path=checkpoint_dir,
+        name_prefix=model_name,
+        save_replay_buffer=False,
+        save_vecnormalize=True,
+    )
 
     # Detect GPU availability (JAX)
     devices = jax.devices()
@@ -61,7 +83,14 @@ def train():
 
     # Train
     print("Starting training...")
-    model.learn(total_timesteps=args.timesteps, reset_num_timesteps=reset_num_timesteps)
+    print(
+        f"Checkpoints will be saved every {args.save_freq} timesteps to {checkpoint_dir}"
+    )
+    model.learn(
+        total_timesteps=args.timesteps,
+        reset_num_timesteps=reset_num_timesteps,
+        callback=checkpoint_callback,
+    )
 
     # Save model
     model.save(model_name)
