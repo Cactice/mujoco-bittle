@@ -41,15 +41,22 @@ def train():
     # Detect GPU availability (JAX)
     devices = jax.devices()
     print(f"JAX devices available: {devices}")
-    print(f"Using device: {devices[0].platform}")
+    jax_device = devices[0].platform
+    # Convert JAX device name to format expected by stable-baselines3
+    device = "cuda" if jax_device == "gpu" else "cpu"
+    print(f"Using device: {device}")
 
     if os.path.exists(model_path):
         print(f"Loading existing model from {model_path}...")
-        model = PPO.load(model_path, env=env, tensorboard_log=tensorboard_log)
+        model = PPO.load(
+            model_path, env=env, tensorboard_log=tensorboard_log, device=device
+        )
         reset_num_timesteps = False
     else:
         print(f"No existing model found, creating new PPO agent for {model_name}...")
-        model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=tensorboard_log)
+        model = PPO(
+            "MlpPolicy", env, verbose=1, tensorboard_log=tensorboard_log, device=device
+        )
         reset_num_timesteps = True
 
     # Train

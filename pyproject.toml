@@ -3,14 +3,26 @@ name = "mujoco-bittle"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "gymnasium>=1.2.2",
+    "imageio>=2.37.2",
+    "jax==0.4.30",
+    "jaxlib==0.4.30",
     "mujoco>=3.4.0",
     "ruff>=0.14.8",
     "sbx-rl>=0.19.0",
     "tensorboard>=2.20.0",
 ]
 
+[project.optional-dependencies]
+cuda = ["jax-cuda12-plugin==0.4.30", "jax-cuda12-pjrt==0.4.30"]
+
 # Note: SBX uses JAX which has better GPU support across platforms
 # JAX will automatically detect and use available GPUs
+# For GPU support on Linux, use: uv sync --extra cuda
+
+[tool.uv]
+find-links = [
+    "https://storage.googleapis.com/jax-releases/jax_cuda_releases.html",
+]
